@@ -4,7 +4,7 @@ export default function CardComponent({ propertyData = {} }) {
     return (
         <Card
             className="max-w-xs h-full md:max-w-sm md:w-full rounded-md"
-            renderImage={() => <img src={`${propertyData.imageUrl}`} alt="image 1" className='h-52 object-cover' />}
+            renderImage={() => <img src={`${propertyData.imageUrl}`} alt="image 1" loading='lazy' className='h-52 object-cover' />}
         >
             <div className='flex-1'>
                 <div>

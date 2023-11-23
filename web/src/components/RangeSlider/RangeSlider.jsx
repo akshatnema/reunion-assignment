@@ -44,7 +44,7 @@ export default function RangeSlider({min, max, currentValue, setCurrentValue}) {
       onClick={handleClick}
       className="w-full absolute top-14 left-0 p-4 z-10 md:w-64 bg-gray-300"
     >
-      <input type="range" min={min} max={max} step="1000" value={value} className="w-full bg-transparent" />
+      <input type="range" min={min} max={max} step="1000" value={value} className="w-full range-secondary" />
       {isDragging && <div className="drag-overlay" />}
       <div>
         <div className="flex justify-between">

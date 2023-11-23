@@ -9,6 +9,7 @@ import { Cities, PropertyTypes } from "../static/filterData";
 import CardComponent from "../components/Card/Card";
 import { Button } from "flowbite-react";
 import Divider from "../components/Divider/Divider";
+import Loader from "../components/Loader/Loader";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +17,7 @@ export default function Home() {
 
   const [propertyData, setPropertyData] = useState([])
   const [filteredPropertyData, setFilteredPropertyData] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const [filters, setFilters] = useState({
     city: searchParams.get('city') || '',
@@ -30,12 +32,16 @@ export default function Home() {
   const [propertyTypeFilter, selectPropertyTypeFilter] = useState(filters.propertyType)
 
   const getPropertyData = async () => {
+    setLoading(true)
     try {
       const resposne = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/list-properties`)
       setPropertyData(resposne.data.message)
+      setLoading(false)
     } catch (error) {
       console.error(error)
+      setLoading(false)
     }
+    
   }
 
   // useEffect has been used to fetch data from the API
@@ -68,7 +74,9 @@ export default function Home() {
 
   // useEffect has been used to apply filters to the tool on each change of router query params
   useEffect(() => {
+    
     if (propertyData.length) {
+      setLoading(true)
       const filteredData = propertyData.filter((property) => {
         if (filters.city && property.city.toLowerCase() !== filters.city.toLowerCase()) return false;
         if (filters.availableFrom && new Date(property.availableDate) > new Date(filters.availableFrom)) return false;
@@ -78,12 +86,14 @@ export default function Home() {
       })
 
       setFilteredPropertyData(filteredData)
+      setLoading(false)
     }
+    
   }, [propertyData, filters])
 
   const handleClearFilters = () => {
     setShowSlider(false)
-    
+
     setFilters({
       city: '',
       availableFrom: new Date().toDateString(),
@@ -142,11 +152,11 @@ export default function Home() {
           </div>
           <div className="relative">
             <Button onClick={() => setShowSlider(!showSlider)} color="blue" className="w-full">
-                <div>{priceFilter ? `Till Rs. ${priceFilter}` : 'Select Price'}</div>
-                <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                </svg>
-              </Button>
+              <div>{priceFilter ? `Till Rs. ${priceFilter}` : 'Select Price'}</div>
+              <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+              </svg>
+            </Button>
             {showSlider && <RangeSlider min={0} max={30000} currentValue={priceFilter} setCurrentValue={setPriceFilter} />}
           </div>
         </div>
@@ -165,9 +175,9 @@ export default function Home() {
           <Button color="warning" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-7 md:justify-start my-6 mx-auto w-fit">
+      {loading ? <Loader /> : <div className="flex flex-wrap justify-center gap-7 md:justify-start my-6 mx-auto w-fit">
         {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<CardComponent key={index} propertyData={property} />))}
-      </div>
+      </div>}
     </Layout>
   )
 }

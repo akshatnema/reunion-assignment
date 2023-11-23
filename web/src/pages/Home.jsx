@@ -1,20 +1,161 @@
-import Layout from "../components/Layout/Layout"
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import Layout from "../components/Layout/Layout";
+import axios from "axios";
 import { Datepicker } from 'flowbite-react';
 import Dropdown from "../components/DropDown/Dropdown";
-import RangeSlider from "../components/RangeSlider/RangeSlider"
+import RangeSlider from "../components/RangeSlider/RangeSlider";
+import { Cities, PropertyTypes } from "../static/filterData";
 import CardComponent from "../components/Card/Card";
+import { Button } from "flowbite-react";
 
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const priceMenuRef = useRef(null)
+
+  const [propertyData, setPropertyData] = useState([])
+  const [filteredPropertyData, setFilteredPropertyData] = useState([])
+
+  const [filters, setFilters] = useState({
+    city: searchParams.get('city') || '',
+    availableFrom: searchParams.get('availableFrom') || new Date().toDateString(),
+    price: searchParams.get('price') || 10000,
+    propertyType: searchParams.get('propertyType') || ''
+  })
+  const [cityFilter, selectCityFilter] = useState(filters.city)
+  const [availableFrom, setAvailableFrom] = useState(filters.availableFrom)
+  const [showSlider, setShowSlider] = useState(false)
+  const [priceFilter, setPriceFilter] = useState(filters.price)
+  const [propertyTypeFilter, selectPropertyTypeFilter] = useState(filters.propertyType)
+
+  const getPropertyData = async () => {
+    try {
+      const resposne = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/list-properties`)
+      setPropertyData(resposne.data.message)
+      console.log(resposne.data.message)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // useEffect has been used to fetch data from the API
+  useEffect(() => {
+    getPropertyData()
+  }, [])
+
+  // useEffect has been used to apply filters to the tool on each change of router query params
+  useEffect(() => {
+
+    if (filters.city) selectCityFilter(filters.city);
+    if (filters.availableFrom) setAvailableFrom(filters.availableFrom);
+    if (filters.propertyType) selectPropertyTypeFilter(filters.propertyType);
+    if (filters.price) setPriceFilter(filters.price);
+
+  }, [filters])
+
+  // useEffect has been used to close the price filter dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (priceMenuRef.current && !priceMenuRef.current.contains(event.target)) {
+        setShowSlider(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  })
+
+  // useEffect has been used to apply filters to the tool on each change of router query params
+  useEffect(() => {
+    if (propertyData.length) {
+      console.log(filters)
+      const filteredData = propertyData.filter((property) => {
+        if (filters.city && property.city.toLowerCase() !== filters.city.toLowerCase()) return false;
+        if (filters.availableFrom && new Date(property.availableFrom) < new Date(filters.availableFrom)) return false;
+        if (filters.price && property.pricePerMonth > filters.price) return false;
+        if (filters.propertyType && property.propertyType.toLowercase() !== filters.propertyType.toLowerCase()) return false;
+        return true;
+      })
+      
+      setFilteredPropertyData(filteredData)
+    }
+  }, [propertyData, filters])
+
+  const handleApplyFilters = () => {
+    setShowSlider(false)
+    setFilters({
+      city: cityFilter,
+      availableFrom: availableFrom,
+      price: priceFilter,
+      propertyType: propertyTypeFilter
+    })
+
+    if (cityFilter) searchParams.set('city', cityFilter);
+
+    if (availableFrom) searchParams.set('availableFrom', availableFrom);
+    if (priceFilter) searchParams.set('price', priceFilter);
+    if (propertyTypeFilter) searchParams.set('propertyType', propertyTypeFilter);
+
+    setSearchParams(searchParams)
+
+  }
+
   return (
     <Layout>
-        <div className="container py-4 mx-auto">
-            <h3 className="text-3xl font-extrabold">Search Properties for Rent</h3>
+      <div className="container py-4 mx-auto">
+        <h3 className="text-3xl font-extrabold">Search Properties for Rent</h3>
+      </div>
+      <div className="flex p-2 px-4 bg-gray-200 gap-2 justify-between w-full flex-wrap">
+        <div className="w-full lg:w-auto flex flex-col gap-2">
+          <div className="text-gray-500">
+            City
+          </div>
+          <div>
+            <Dropdown options={Cities} label='Select City' selectedValue={cityFilter} setSelectedValue={selectCityFilter} />
+          </div>
         </div>
-        <div className="flex p-2 bg-gray-200 w-full">
-            <Dropdown />
-            <RangeSlider min={0} max={100} initialValue={20} />
+        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <div className="w-full lg:w-auto flex flex-col gap-2">
+          <div className="text-gray-500">
+            Available From
+          </div>
+          <div>
+            <Datepicker value={availableFrom} onSelectedDateChanged={(data) => (setAvailableFrom(data.toDateString()))} />
+          </div>
         </div>
-        <CardComponent />
+        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <div className="w-full lg:w-auto flex flex-col gap-2" ref={priceMenuRef}>
+          <div className="text-gray-500">
+            Price
+          </div>
+          <div className="relative">
+            <Button onClick={() => setShowSlider(!showSlider)} className="w-full">
+                <div>{priceFilter ? `Till Rs. ${priceFilter}` : 'Select Price'}</div>
+                <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                </svg>
+              </Button>
+            {showSlider && <RangeSlider min={0} max={30000} currentValue={priceFilter} setCurrentValue={setPriceFilter} />}
+          </div>
+        </div>
+        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <div className="w-full lg:w-auto flex flex-col gap-2">
+          <div className="text-gray-500">
+            Property Type
+          </div>
+          <div>
+            <Dropdown options={PropertyTypes} label='Select Property Type' selectedValue={propertyTypeFilter} setSelectedValue={selectPropertyTypeFilter} />
+          </div>
+        </div>
+        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <div className="my-auto w-fit">
+          <Button color="warning" size="xl" onClick={() => handleApplyFilters()}>Apply</Button>
+        </div>
+      </div>
+      <div className="flex justify-center gap-4 md:justify-start my-4">
+        {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<div key={index}><CardComponent propertyData={property} /></div>))}
+      </div>
     </Layout>
   )
 }

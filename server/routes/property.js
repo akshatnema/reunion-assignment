@@ -6,10 +6,10 @@ const User = require('../models/user');
 
 // Add a property
 router.post('/', async (req, res) => {
-    const { token, name, pricePerMonth, location, propertyType, imageUrl, propertyFeatures } = req.body;
+    const { token, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures } = req.body;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ email: decoded.email });
-    const response = await addProperty(user._id, name, pricePerMonth, location, propertyType, imageUrl, propertyFeatures);
+    const response = await addProperty(user._id, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures);
     return res.status(response.status).json({ message: response.message });
 })
 

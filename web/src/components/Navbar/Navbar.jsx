@@ -9,8 +9,8 @@ export default function NavbarComponent() {
                 <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Flowbite React</span>
             </Navbar.Brand>
             <div className="flex gap-2 md:order-2">
-                <Button>Login</Button>
-                <Button>Sign Up</Button>
+                <Button className='hidden md:block'>Login</Button>
+                <Button className='hidden md:block'>Sign Up</Button>
                 <Navbar.Toggle />
             </div>
             <Navbar.Collapse>

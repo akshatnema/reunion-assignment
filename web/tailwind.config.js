@@ -7,6 +7,10 @@ export default {
   ],
   theme: {
     extend: {
+      minWidth: {
+        48: '12rem',
+        52: '13rem'
+      }
     },
   },
   daisyui: {

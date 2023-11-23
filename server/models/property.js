@@ -12,6 +12,7 @@ const propertySchema = new mongoose.Schema({
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     pricePerMonth: { type: Number, required: true },
+    availableDate: {type: Date, required: true},
     location: { type: String, required: true },
     propertyType: { type: String, required: true },
     propertyFeatures: propertyFeatures,

@@ -1,11 +1,11 @@
 const Property = require('../models/property');
 
-const addProperty = async (owner, name, pricePerMonth, location, propertyType, imageUrl) => {
+const addProperty = async (owner, name, pricePerMonth, location, propertyType, imageUrl='', propertyFeatures) => {
     try {
-        if (!name || !pricePerMonth || !location || !propertyType) {
+        if (!name || !pricePerMonth || !location || !propertyType || !propertyFeatures) {
             return { status: 400, message: 'All fields are required' }
         }
-        const property = new Property({ owner, name, pricePerMonth, location, propertyType, imageUrl });
+        const property = new Property({ owner, name, pricePerMonth, location, propertyType, imageUrl, propertyFeatures });
         await property.save();
         return { status: 200, message: 'Property added successfully' }
     } catch (error) {

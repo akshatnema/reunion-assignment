@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const propertyFeatures = new mongoose.Schema({
+    beds: { type: Number, required: true },
+    bathrooms: { type: Number, required: true },
+    length: { type: Number, required: true },
+    width: { type: Number, required: true }
+});
+
 const propertySchema = new mongoose.Schema({
     propertyId: { type: String, unique: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -7,6 +14,7 @@ const propertySchema = new mongoose.Schema({
     pricePerMonth: { type: Number, required: true },
     location: { type: String, required: true },
     propertyType: { type: String, required: true },
+    propertyFeatures: propertyFeatures,
     imageUrl: { type: String },
 });
 

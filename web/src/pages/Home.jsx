@@ -175,9 +175,9 @@ export default function Home() {
           <Button color="warning" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
-      {loading ? <Loader /> : <div className="flex flex-wrap justify-center gap-7 md:justify-start my-6 mx-auto w-fit">
-        {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<CardComponent key={index} propertyData={property} />))}
-      </div>}
+      {loading ? <Loader /> : <div className="flex flex-wrap justify-center gap-8 md:justify-start my-6">
+        {filteredPropertyData.length ? filteredPropertyData.map((property, index) => (<CardComponent key={index} propertyData={property} />)) : <div className="w-full h-96 flex"> <div className="m-auto">No matches found...</div> </div>} </div>
+      }
     </Layout>
   )
 }

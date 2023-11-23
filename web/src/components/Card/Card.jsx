@@ -22,7 +22,7 @@ export default function CardComponent({ propertyData = {} }) {
             </div>
             <div className=''>
                 <hr />
-                <div className='flex justify-between pt-2'>
+                <div className='flex justify-between gap-2 pt-2'>
                     <div>
                         <i className="fa-solid fa-bed"></i>
                         <span className='ml-2 text-sm'>{propertyData.propertyFeatures.beds} Beds</span>

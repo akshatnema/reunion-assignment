@@ -20,7 +20,7 @@ export default function Home() {
   const [filters, setFilters] = useState({
     city: searchParams.get('city') || '',
     availableFrom: searchParams.get('availableFrom') || new Date().toDateString(),
-    price: searchParams.get('price') || 10000,
+    price: searchParams.get('price') || 30000,
     propertyType: searchParams.get('propertyType') || ''
   })
   const [cityFilter, selectCityFilter] = useState(filters.city)
@@ -41,7 +41,7 @@ export default function Home() {
   // useEffect has been used to fetch data from the API
   useEffect(() => {
     getPropertyData()
-  }, [])
+  }, [filters])
 
   // useEffect has been used to apply filters to the tool on each change of router query params
   useEffect(() => {
@@ -80,6 +80,18 @@ export default function Home() {
       setFilteredPropertyData(filteredData)
     }
   }, [propertyData, filters])
+
+  const handleClearFilters = () => {
+    setShowSlider(false)
+    
+    setFilters({
+      city: '',
+      availableFrom: new Date().toDateString(),
+      price: 30000,
+      propertyType: ''
+    })
+    setSearchParams({})
+  }
 
   const handleApplyFilters = () => {
     setShowSlider(false)
@@ -129,7 +141,7 @@ export default function Home() {
             Price
           </div>
           <div className="relative">
-            <Button onClick={() => setShowSlider(!showSlider)} className="w-full">
+            <Button onClick={() => setShowSlider(!showSlider)} color="blue" className="w-full">
                 <div>{priceFilter ? `Till Rs. ${priceFilter}` : 'Select Price'}</div>
                 <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
@@ -148,12 +160,13 @@ export default function Home() {
           </div>
         </div>
         <Divider />
-        <div className="my-auto w-fit">
-          <Button color="warning" size="xl" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
+        <div className="my-4 md:my-auto flex gap-2 w-fit">
+          <Button color="purple" size="lg" className="shadow-lg" onClick={() => handleClearFilters()}>Clear</Button>
+          <Button color="warning" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 md:justify-between my-6">
-        {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<div key={index}><CardComponent propertyData={property} /></div>))}
+      <div className="flex flex-wrap justify-center gap-7 md:justify-start my-6 mx-auto w-fit">
+        {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<CardComponent key={index} propertyData={property} />))}
       </div>
     </Layout>
   )

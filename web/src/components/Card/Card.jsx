@@ -3,8 +3,8 @@ import { Card } from 'flowbite-react';
 export default function CardComponent({ propertyData = {} }) {
     return (
         <Card
-            className="max-w-sm h-full"
-            renderImage={() => <img width={350} height={300} src={`${propertyData.imageUrl}`} alt="image 1" />}
+            className="max-w-xs h-full md:max-w-sm md:w-full rounded-md"
+            renderImage={() => <img src={`${propertyData.imageUrl}`} alt="image 1" className='h-52 object-cover' />}
         >
             <div className='flex-1'>
                 <div>

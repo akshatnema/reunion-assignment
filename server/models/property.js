@@ -8,7 +8,7 @@ const propertyFeatures = new mongoose.Schema({
 });
 
 const propertySchema = new mongoose.Schema({
-    propertyId: { type: String, unique: true },
+    propertyId: { type: Number, unique: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     pricePerMonth: { type: Number, required: true },

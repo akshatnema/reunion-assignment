@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { extractToken } = require('../utils/token');
 
 const authenticatedUser = async (req, res, next) => {
     try {
-        const { token } = req.body;
-        if (!token) return res.status(401).json({ error: 'Token not provided' });
+        const tokenResponse = await extractToken(req);
+        if (tokenResponse.status!==200) return res.status(tokenResponse.status).json({ error: tokenResponse.message });
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(tokenResponse.message, process.env.JWT_SECRET);
         if (expiredToken(decoded)) res.status(401).json({ error: 'Unauthorized' });
 
         const user = await User.findOne({ email: decoded.email });

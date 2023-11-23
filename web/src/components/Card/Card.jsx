@@ -1,7 +1,6 @@
 import { Card } from 'flowbite-react';
 
 export default function CardComponent({ propertyData = {} }) {
-    console.log(propertyData.imageUrl)
     return (
         <Card
             className="max-w-sm h-full"
@@ -15,7 +14,10 @@ export default function CardComponent({ propertyData = {} }) {
                     {propertyData.name}
                 </h5>
                 <p className="font-normal text-gray-700">
-                    {propertyData.location}
+                    <span className='font-bold'>Address</span> - {propertyData.location}
+                </p>
+                <p className="font-normal text-gray-700">
+                    <span className='font-bold'>Property Type</span> - {propertyData.propertyType}
                 </p>
             </div>
             <div className=''>

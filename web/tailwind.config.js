@@ -10,11 +10,14 @@ export default {
       minWidth: {
         48: '12rem',
         52: '13rem'
+      },
+      fontFamily: {
+        montserrat: ['Montserrat', 'sans-serif']
       }
     },
   },
   daisyui: {
-    themes: ["cupcake"]
+    themes: ["light", "dark"]
   },
   plugins: [
     require('flowbite/plugin'),

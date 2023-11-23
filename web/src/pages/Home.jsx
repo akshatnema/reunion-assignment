@@ -8,6 +8,7 @@ import RangeSlider from "../components/RangeSlider/RangeSlider";
 import { Cities, PropertyTypes } from "../static/filterData";
 import CardComponent from "../components/Card/Card";
 import { Button } from "flowbite-react";
+import Divider from "../components/Divider/Divider";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,9 +33,8 @@ export default function Home() {
     try {
       const resposne = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/list-properties`)
       setPropertyData(resposne.data.message)
-      console.log(resposne.data.message)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -69,15 +69,14 @@ export default function Home() {
   // useEffect has been used to apply filters to the tool on each change of router query params
   useEffect(() => {
     if (propertyData.length) {
-      console.log(filters)
       const filteredData = propertyData.filter((property) => {
         if (filters.city && property.city.toLowerCase() !== filters.city.toLowerCase()) return false;
-        if (filters.availableFrom && new Date(property.availableFrom) < new Date(filters.availableFrom)) return false;
+        if (filters.availableFrom && new Date(property.availableDate) > new Date(filters.availableFrom)) return false;
         if (filters.price && property.pricePerMonth > filters.price) return false;
         if (filters.propertyType && property.propertyType.toLowercase() !== filters.propertyType.toLowerCase()) return false;
         return true;
       })
-      
+
       setFilteredPropertyData(filteredData)
     }
   }, [propertyData, filters])
@@ -103,8 +102,8 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="container py-4 mx-auto">
-        <h3 className="text-3xl font-extrabold">Search Properties for Rent</h3>
+      <div className="container py-6 mx-auto">
+        <h1 className="text-4xl text-center font-extrabold font-montserrat">Search Properties for Rent</h1>
       </div>
       <div className="flex p-2 px-4 bg-gray-200 gap-2 justify-between w-full flex-wrap">
         <div className="w-full lg:w-auto flex flex-col gap-2">
@@ -115,7 +114,7 @@ export default function Home() {
             <Dropdown options={Cities} label='Select City' selectedValue={cityFilter} setSelectedValue={selectCityFilter} />
           </div>
         </div>
-        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <Divider />
         <div className="w-full lg:w-auto flex flex-col gap-2">
           <div className="text-gray-500">
             Available From
@@ -124,7 +123,7 @@ export default function Home() {
             <Datepicker value={availableFrom} onSelectedDateChanged={(data) => (setAvailableFrom(data.toDateString()))} />
           </div>
         </div>
-        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <Divider />
         <div className="w-full lg:w-auto flex flex-col gap-2" ref={priceMenuRef}>
           <div className="text-gray-500">
             Price
@@ -139,7 +138,7 @@ export default function Home() {
             {showSlider && <RangeSlider min={0} max={30000} currentValue={priceFilter} setCurrentValue={setPriceFilter} />}
           </div>
         </div>
-        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <Divider />
         <div className="w-full lg:w-auto flex flex-col gap-2">
           <div className="text-gray-500">
             Property Type
@@ -148,12 +147,12 @@ export default function Home() {
             <Dropdown options={PropertyTypes} label='Select Property Type' selectedValue={propertyTypeFilter} setSelectedValue={selectPropertyTypeFilter} />
           </div>
         </div>
-        <div className="w-0 border-0 md:border-l-2 border-gray-400"></div>
+        <Divider />
         <div className="my-auto w-fit">
-          <Button color="warning" size="xl" onClick={() => handleApplyFilters()}>Apply</Button>
+          <Button color="warning" size="xl" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
-      <div className="flex justify-center gap-4 md:justify-start my-4">
+      <div className="flex flex-wrap justify-center gap-4 md:justify-between my-6">
         {filteredPropertyData.length && filteredPropertyData.map((property, index) => (<div key={index}><CardComponent propertyData={property} /></div>))}
       </div>
     </Layout>

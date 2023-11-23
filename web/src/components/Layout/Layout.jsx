@@ -4,8 +4,8 @@ export default function Layout({children}) {
   return (
     <div className="mx-auto max-w-7xl">
         <Navbar />
-        <div className="p-2">
-        {children}
+        <div className="p-2 md:p-8">
+          {children}
         </div>
     </div>
   )

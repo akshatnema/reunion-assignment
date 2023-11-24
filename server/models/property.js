@@ -19,6 +19,7 @@ const propertySchema = new mongoose.Schema({
     imageUrl: { type: String },
 });
 
+// function to add auto-incremented propertyID to the newly created property before saving it to the database
 propertySchema.pre('save', async function (next) {
     try {
         if (!this.isNew) {

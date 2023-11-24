@@ -1,3 +1,6 @@
+// Desc: Token utility functions
+
+// Extract token from request header and return it
 const extractToken = async (req) => {
     const authorizationHeader = req.headers['authorization'];
 

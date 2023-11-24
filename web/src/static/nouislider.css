@@ -70,6 +70,7 @@
 .noUi-touch-area {
   height: 100%;
   width: 100%;
+  background-color: #0f2db4;
 }
 .noUi-state-tap .noUi-connect,
 .noUi-state-tap .noUi-origin {

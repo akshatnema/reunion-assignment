@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { extractToken } = require('../utils/token');
 
+// function to check whether API made by an authenticated user or not
 const authenticatedUser = async (req, res, next) => {
     try {
         const tokenResponse = await extractToken(req);
@@ -20,6 +21,7 @@ const authenticatedUser = async (req, res, next) => {
     }
 }
 
+// function to check whether token has expired or not
 const expiredToken = (decodedToken) => {
     const currentTime = Math.floor(Date.now() / 1000);
 

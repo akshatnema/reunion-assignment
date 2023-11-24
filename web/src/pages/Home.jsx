@@ -19,6 +19,7 @@ export default function Home() {
   const [filteredPropertyData, setFilteredPropertyData] = useState([])
   const [loading, setLoading] = useState(false)
 
+  // filters state has been used to store the filters applied to the tool
   const [filters, setFilters] = useState({
     city: searchParams.get('city') || '',
     availableFrom: searchParams.get('availableFrom') || new Date().toDateString(),
@@ -140,6 +141,7 @@ export default function Home() {
       <div className="container py-6 mx-auto">
         <h1 className="text-4xl text-center font-extrabold font-montserrat">Search Properties for Rent</h1>
       </div>
+      
       <div className="flex p-2 px-4 bg-gray-200 gap-2 justify-between w-full flex-wrap">
         <div className="w-full lg:w-auto flex flex-col gap-2">
           <div className="text-gray-500">
@@ -188,6 +190,7 @@ export default function Home() {
           <Button color="purple" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
+
       {loading ? <Loader /> : <div className="flex flex-wrap justify-center gap-8 md:justify-start my-6">
         {filteredPropertyData.length ? filteredPropertyData.map((property, index) => (<CardComponent key={index} propertyData={property} />)) : <div className="w-full h-96 flex"> <div className="m-auto">No matches found...</div> </div>} </div>
       }

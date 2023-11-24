@@ -1,5 +1,6 @@
 const Property = require('../models/property');
 
+// function to add a property to the database
 const addProperty = async (owner, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl='', propertyFeatures) => {
     try {
         if (!name || !pricePerMonth || !location || !propertyType || !propertyFeatures || !availabilityDate) {
@@ -15,6 +16,7 @@ const addProperty = async (owner, name, pricePerMonth, location, propertyType, a
     }
 }
 
+// function to get all properties from the database
 const getAllProperties = async () => {
     try {
         const properties = await Property.find({});
@@ -25,6 +27,7 @@ const getAllProperties = async () => {
     }
 }
 
+// function to update a property by id
 const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures) => {
     try {
         const availableDate = new Date(availabilityDate);
@@ -44,6 +47,7 @@ const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location
     }
 }
 
+// function to delete a property by id and owner id
 const deleteProperty = async (ownerId, propertyId) => {
     try {
         const deletedProperty = await Property.findOneAndDelete({ propertyId: propertyId, owner: ownerId });
@@ -58,6 +62,7 @@ const deleteProperty = async (ownerId, propertyId) => {
     }
 }
 
+// function to get a properties by owner id
 const getProperty = async (ownerId) => {
     try {
         const properties = await Property.find({ owner: ownerId });

@@ -81,7 +81,8 @@ export default function Home() {
     if (propertyData.length) {
       setLoading(true)
       const filteredData = propertyData.filter((property) => {
-        if (filters.city && property.city.toLowerCase() !== filters.city.toLowerCase()) return false;
+        console.log(property)
+        if (filters.city && property.location.toLowerCase() !== filters.city.toLowerCase()) return false;
         if (filters.availableFrom && new Date(property.availableDate) > new Date(filters.availableFrom)) return false;
         if (filters.price.start && property.pricePerMonth < filters.price.start) return false;
         if (filters.price.end && property.pricePerMonth > filters.price.end) return false;

@@ -142,7 +142,7 @@ export default function Home() {
             City
           </div>
           <div>
-            <Dropdown options={Cities} label='Select City' selectedValue={cityFilter} setSelectedValue={selectCityFilter} />
+            <Dropdown options={Cities} label='All Cities' selectedValue={cityFilter} setSelectedValue={selectCityFilter} />
           </div>
         </div>
         <Divider />
@@ -175,7 +175,7 @@ export default function Home() {
             Property Type
           </div>
           <div>
-            <Dropdown options={PropertyTypes} label='Select Property Type' selectedValue={propertyTypeFilter} setSelectedValue={selectPropertyTypeFilter} />
+            <Dropdown options={PropertyTypes} label='All Property Types' selectedValue={propertyTypeFilter} setSelectedValue={selectPropertyTypeFilter} />
           </div>
         </div>
         <Divider />

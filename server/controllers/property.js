@@ -25,11 +25,12 @@ const getAllProperties = async () => {
     }
 }
 
-const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location, propertyType, imageUrl) => {
+const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures) => {
     try {
+        const availableDate = new Date(availabilityDate);
         const updatedProperty = await Property.findOneAndUpdate(
             { propertyId: propertyId, ownerId: ownerId },
-            { name, pricePerMonth, location, propertyType, imageUrl },
+            { name, pricePerMonth, location, propertyType, availableDate, imageUrl, propertyFeatures },
             { new: true }
         );
 

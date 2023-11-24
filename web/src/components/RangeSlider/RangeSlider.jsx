@@ -1,60 +1,42 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import noUiSlider from 'nouislider';
+import '../../static/nouislider.css';
 
-export default function RangeSlider({min, max, currentValue, setCurrentValue}) {
-  const [value, setValue] = useState(currentValue);
-  const [isDragging, setIsDragging] = useState(false);
-  const sliderRef = useRef();
+export default function RangeSlider({min, max, currentValue={}, setCurrentValue}) {
+  const sliderRef = useRef(null);
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  useEffect(() => {
+    // Initialize the slider when the component mounts
+    const slider = sliderRef.current;
 
-  const handleMouseDown = () => {
-    setIsDragging(true);
-  };
+    noUiSlider.create(slider, {
+      start: [currentValue.start, currentValue.end], // Initial values
+      connect: true,
+      range: {
+        min: min,
+        max: max,
+      },
+      // tooltips: [true, true],
+      step: 1000,
+    });
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    // Update parent component when slider values change
+    slider.noUiSlider.on('update', (values) => {
+      const [start, end] = values.map(parseFloat);
+      setCurrentValue({ start, end });
+    });
 
-  const handleMouseMove = (event) => {
-    if (isDragging) {
-      const rect = sliderRef.current.getBoundingClientRect();
-      const percent = (event.clientX - rect.left) / rect.width;
-      const newValue = clamp(Math.round(percent * (max - min) + min), min, max);
-      setValue(newValue);
-      setCurrentValue(newValue)
-    }
-  };
+    // Clean up the slider when the component unmounts
+    return () => {
+      slider.noUiSlider.destroy();
+    };
+  }, [min, max, setCurrentValue]);
 
-  const handleClick = (event) => {
-    if (!isDragging) {
-      const rect = sliderRef.current.getBoundingClientRect();
-      const percent = (event.clientX - rect.left) / rect.width;
-      const newValue = clamp(Math.round(percent * (max - min) + min), min, max);
-      setValue(newValue);
-      setCurrentValue(newValue)
-    }
-  };
-  return (
-    <div
-      ref={sliderRef}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseUp}
-      onClick={handleClick}
-      className="w-full absolute top-14 left-0 p-4 z-10 md:w-64 bg-gray-300"
-    >
-      <input type="range" min={min} max={max} step="1000" value={value} className="w-full range-secondary" />
-      {isDragging && <div className="drag-overlay" />}
-      <div>
-        <div className="flex justify-between">
-          <div>Min: {min}</div>
-          <div>Max: {max}</div>
-        </div>
-        <div className="flex justify-between">
-          <div>Current value: {value}</div>
-        </div>
-      </div>
+  return( <div className="w-full absolute top-14 left-0 p-4 z-10 md:w-64 bg-gray-300"> 
+    <div className="m-2" ref={sliderRef} /> 
+    <div className="m-2 flex justify-between">
+        <div>0</div>
+        <div>30000</div>
     </div>
-  )
+    </div>);
 }

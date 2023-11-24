@@ -22,13 +22,16 @@ export default function Home() {
   const [filters, setFilters] = useState({
     city: searchParams.get('city') || '',
     availableFrom: searchParams.get('availableFrom') || new Date().toDateString(),
-    price: searchParams.get('price') || 30000,
+    price: JSON.parse(searchParams.get('price')) || { start: 10000, end: 30000},
     propertyType: searchParams.get('propertyType') || ''
   })
   const [cityFilter, selectCityFilter] = useState(filters.city)
   const [availableFrom, setAvailableFrom] = useState(filters.availableFrom)
   const [showSlider, setShowSlider] = useState(false)
-  const [priceFilter, setPriceFilter] = useState(filters.price)
+  const [priceFilter, setPriceFilter] = useState({
+    start: 10000,
+    end: 30000
+  })
   const [propertyTypeFilter, selectPropertyTypeFilter] = useState(filters.propertyType)
 
   const getPropertyData = async () => {
@@ -51,7 +54,7 @@ export default function Home() {
 
   // useEffect has been used to apply filters to the tool on each change of router query params
   useEffect(() => {
-
+    
     if (filters.city) selectCityFilter(filters.city);
     if (filters.availableFrom) setAvailableFrom(filters.availableFrom);
     if (filters.propertyType) selectPropertyTypeFilter(filters.propertyType);
@@ -80,8 +83,9 @@ export default function Home() {
       const filteredData = propertyData.filter((property) => {
         if (filters.city && property.city.toLowerCase() !== filters.city.toLowerCase()) return false;
         if (filters.availableFrom && new Date(property.availableDate) > new Date(filters.availableFrom)) return false;
-        if (filters.price && property.pricePerMonth > filters.price) return false;
-        if (filters.propertyType && property.propertyType.toLowercase() !== filters.propertyType.toLowerCase()) return false;
+        if (filters.price.start && property.pricePerMonth < filters.price.start) return false;
+        if (filters.price.end && property.pricePerMonth > filters.price.end) return false;
+        if (filters.propertyType && property.propertyType.toLowerCase() !== filters.propertyType.toLowerCase()) return false;
         return true;
       })
 
@@ -100,6 +104,11 @@ export default function Home() {
       price: 30000,
       propertyType: ''
     })
+    selectCityFilter('')
+    setAvailableFrom(new Date().toDateString())
+    setPriceFilter(30000)
+    selectPropertyTypeFilter('')
+
     setSearchParams({})
   }
 
@@ -115,7 +124,7 @@ export default function Home() {
     if (cityFilter) searchParams.set('city', cityFilter);
 
     if (availableFrom) searchParams.set('availableFrom', availableFrom);
-    if (priceFilter) searchParams.set('price', priceFilter);
+    if (priceFilter) searchParams.set('price', JSON.stringify(priceFilter));
     if (propertyTypeFilter) searchParams.set('propertyType', propertyTypeFilter);
 
     setSearchParams(searchParams)
@@ -152,7 +161,7 @@ export default function Home() {
           </div>
           <div className="relative">
             <Button onClick={() => setShowSlider(!showSlider)} color="blue" className="w-full">
-              <div>{priceFilter ? `Till Rs. ${priceFilter}` : 'Select Price'}</div>
+              <div>{priceFilter ? `Rs. ${priceFilter.start} - Rs. ${priceFilter.end}` : 'Select Price'}</div>
               <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
               </svg>
@@ -171,8 +180,8 @@ export default function Home() {
         </div>
         <Divider />
         <div className="my-4 md:my-auto flex gap-2 w-fit">
-          <Button color="purple" size="lg" className="shadow-lg" onClick={() => handleClearFilters()}>Clear</Button>
-          <Button color="warning" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
+          <Button color="purple" size="lg" className="shadow-lg" onClick={() => handleClearFilters()} outline>Clear</Button>
+          <Button color="purple" size="lg" className="shadow-lg" onClick={() => handleApplyFilters()}>Apply</Button>
         </div>
       </div>
       {loading ? <Loader /> : <div className="flex flex-wrap justify-center gap-8 md:justify-start my-6">

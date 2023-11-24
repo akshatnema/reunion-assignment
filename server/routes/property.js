@@ -47,8 +47,8 @@ router.put('/:id', async (req, res) => {
     const propertyId = req.params.id;
     const decoded = jwt.verify(tokenResponse.message, process.env.JWT_SECRET);
     const user = User.findOne({ email: decoded.email });
-    const { name, pricePerMonth, location, propertyType, imageUrl } = req.body;
-    const response = await updateProperty(user._id, propertyId, name, pricePerMonth, location, propertyType, imageUrl);
+    const { name, pricePerMonth, location, propertyType, imageUrl, availabilityDate, propertyFeatures } = req.body;
+    const response = await updateProperty(user._id, propertyId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures);
     return res.status(response.status).json({ message: response.message });
 })
 

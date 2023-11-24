@@ -1,11 +1,13 @@
 const Property = require('../models/property');
+const {checkPropertyDetails} = require('../utils/property');
 
 // function to add a property to the database
 const addProperty = async (owner, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl='', propertyFeatures) => {
     try {
-        if (!name || !pricePerMonth || !location || !propertyType || !propertyFeatures || !availabilityDate) {
-            return { status: 400, message: 'All fields are required' }
-        }
+        const propertyDetails = await checkPropertyDetails(owner, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures);
+
+        if (propertyDetails.status!==200) return propertyDetails;
+
         const availableDate = new Date(availabilityDate);
         const property = new Property({ owner, name, pricePerMonth, location, propertyType, availableDate, imageUrl, propertyFeatures });
         await property.save();
@@ -30,20 +32,24 @@ const getAllProperties = async () => {
 // function to update a property by id
 const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures) => {
     try {
+        const propertyDetails = await checkPropertyDetails(ownerId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures);
+        if(propertyDetails.status!==200) return propertyDetails;
+
         const availableDate = new Date(availabilityDate);
         const updatedProperty = await Property.findOneAndUpdate(
-            { propertyId: propertyId, ownerId: ownerId },
+            { propertyId: propertyId, owner: ownerId },
             { name, pricePerMonth, location, propertyType, availableDate, imageUrl, propertyFeatures },
             { new: true }
         );
 
         if (!updatedProperty) {
-            return res.status(404).json({ error: 'Property not found or you do not have permission to update it' });
+            return { status: 404, message: 'Property not found or you do not have permission to update it'}
         }
 
-        res.json({ message: 'Property updated successfully' });
+        return { status: 200, message: 'Property updated successfully'}
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error)
+        return { status: 500, message: 'Internal Server Error' }
     }
 }
 
@@ -51,14 +57,15 @@ const updateProperty = async (ownerId, propertyId, name, pricePerMonth, location
 const deleteProperty = async (ownerId, propertyId) => {
     try {
         const deletedProperty = await Property.findOneAndDelete({ propertyId: propertyId, owner: ownerId });
-
+        
         if (!deletedProperty) {
-            return res.status(404).json({ error: 'Property not found or you do not have permission to delete it' });
+            return { status: 404, message: 'Property not found or you do not have permission to delete it'}
         }
 
-        res.json({ message: 'Property deleted successfully' });
+        return { status: 200, message: 'Property deleted successfully'}
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error(error)
+        return { status: 500, message: 'Internal Server Error' }
     }
 }
 

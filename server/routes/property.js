@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const { addProperty, getProperty, deleteProperty } = require('../controllers/property');
+const { addProperty, getProperty, deleteProperty, updateProperty } = require('../controllers/property');
 const User = require('../models/user');
 const { extractToken } = require('../utils/token');
 
@@ -36,17 +36,21 @@ router.get('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const tokenResponse = await extractToken(req);;
     const decoded = jwt.verify(tokenResponse.message, process.env.JWT_SECRET);
-    const propertyId = req.params.id;
-    const response = await deleteProperty(decoded.email, propertyId);
+    const propertyId = parseInt(req.params.id);
+
+    const user = await User.findOne({ email: decoded.email });
+
+    const response = await deleteProperty(user._id, propertyId);
     return res.status(response.status).json({ message: response.message });
 })
 
 // Update a property
 router.put('/:id', async (req, res) => {
     const tokenResponse = await extractToken(req);
-    const propertyId = req.params.id;
+    const propertyId = parseInt(req.params.id);
+    
     const decoded = jwt.verify(tokenResponse.message, process.env.JWT_SECRET);
-    const user = User.findOne({ email: decoded.email });
+    const user = await User.findOne({ email: decoded.email });
     const { name, pricePerMonth, location, propertyType, imageUrl, availabilityDate, propertyFeatures } = req.body;
     const response = await updateProperty(user._id, propertyId, name, pricePerMonth, location, propertyType, availabilityDate, imageUrl, propertyFeatures);
     return res.status(response.status).json({ message: response.message });

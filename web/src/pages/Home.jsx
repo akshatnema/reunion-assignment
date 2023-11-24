@@ -101,12 +101,15 @@ export default function Home() {
     setFilters({
       city: '',
       availableFrom: new Date().toDateString(),
-      price: 30000,
+      price: { start: 10000, end: 30000},
       propertyType: ''
     })
     selectCityFilter('')
     setAvailableFrom(new Date().toDateString())
-    setPriceFilter(30000)
+    setPriceFilter({
+      start: 10000,
+      end: 30000
+    })
     selectPropertyTypeFilter('')
 
     setSearchParams({})
